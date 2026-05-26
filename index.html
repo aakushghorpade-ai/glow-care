@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Твой Идеальный Уход</title>
+    
+    <!-- 
+        МЕСТО ДЛЯ КОДА АНАЛИТИКИ
+        Скопируйте код Google Analytics (gtag.js) или Яндекс.Метрики 
+        и вставьте его прямо под этой строчкой, перед закрывающим тегом </head>.
+    -->
+    
+    <!-- Подключаем красивые шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Подключаем наш файл стилей -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo" onclick="app.showSection('home')">Glow&Care</div>
+    </header>
+
+    <main id="main-content">
+        <!-- ГЛАВНЫЙ ЭКРАН -->
+        <section id="home-section" class="section active">
+            <div class="hero-container">
+                <h1 class="hero-title">Узнай, что нужно именно твоей коже и волосам за 1 минуту</h1>
+                <p class="hero-subtitle">Пройди короткий тест и получи персональную подборку средств, которые действительно работают.</p>
+                <button class="btn btn-primary" onclick="app.startQuiz()">Подобрать уход</button>
+            </div>
+        </section>
+
+        <!-- КВИЗ (ТЕСТ) -->
+        <section id="quiz-section" class="section hidden">
+            <div class="quiz-container">
+                <div class="progress-bar">
+                    <div id="quiz-progress" class="progress-fill"></div>
+                </div>
+                
+                <!-- Шаг 1 -->
+                <div id="quiz-step-1" class="quiz-step active">
+                    <h2 class="quiz-question">Для чего подбираем уход?</h2>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" onclick="app.answerQuiz('category', 'skin', 2)">Для лица (кожа)</button>
+                        <button class="quiz-btn" onclick="app.answerQuiz('category', 'hair', 2)">Для волос</button>
+                        <button class="quiz-btn" onclick="app.answerQuiz('category', 'body', 2)">Для тела</button>
+                    </div>
+                </div>
+
+                <!-- Шаг 2 (динамически меняется в зависимости от шага 1) -->
+                <div id="quiz-step-2" class="quiz-step hidden">
+                    <h2 class="quiz-question">Какая главная проблема беспокоит?</h2>
+                    <div id="problems-container" class="quiz-options">
+                        <!-- Кнопки генерируются в JS -->
+                    </div>
+                </div>
+
+                <!-- Шаг 3 -->
+                <div id="quiz-step-3" class="quiz-step hidden">
+                    <h2 class="quiz-question">Какой бюджет на одно средство?</h2>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" onclick="app.answerQuiz('budget', 'low', 'results')">До 1000 ₽ (Бюджет)</button>
+                        <button class="quiz-btn" onclick="app.answerQuiz('budget', 'mid', 'results')">1000 - 3000 ₽ (Средний)</button>
+                        <button class="quiz-btn" onclick="app.answerQuiz('budget', 'high', 'results')">От 3000 ₽ (Премиум)</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ЭКРАН ЗАГРУЗКИ (ОЖИДАНИЕ) -->
+        <section id="loading-section" class="section hidden">
+            <div class="loading-container">
+                <div class="spinner"></div>
+                <h2>Анализируем ответы...</h2>
+                <p>Подбираем Топ-5 идеальных средств специально для вас</p>
+            </div>
+        </section>
+
+        <!-- СТРАНИЦА РЕЗУЛЬТАТОВ -->
+        <section id="results-section" class="section hidden">
+            <div class="results-header">
+                <h2>Твоя персональная подборка</h2>
+                <p>Мы подобрали эти средства специально под твои потребности.</p>
+                <button class="btn btn-secondary btn-small" onclick="app.startQuiz()">Пройти тест заново</button>
+            </div>
+            <div id="products-grid" class="products-grid">
+                <!-- Карточки товаров генерируются в JS -->
+            </div>
+        </section>
+
+        <!-- ВХОД В АДМИНКУ -->
+        <section id="admin-login-section" class="section hidden">
+            <div class="admin-container">
+                <h2>Вход в панель управления</h2>
+                <div class="form-group">
+                    <input type="password" id="admin-password" placeholder="Введите пароль">
+                </div>
+                <button class="btn btn-primary" onclick="app.loginAdmin()">Войти</button>
+                <p id="login-error" class="error-text hidden">Неверный пароль</p>
+            </div>
+        </section>
+
+        <!-- АДМИН ПАНЕЛЬ -->
+        <section id="admin-panel-section" class="section hidden">
+            <div class="admin-container wide">
+                <div class="admin-header">
+                    <h2>Панель управления</h2>
+                    <button class="btn btn-secondary btn-small" onclick="app.logoutAdmin()">Выйти</button>
+                </div>
+                
+                <div class="admin-stats">
+                    <h3>Статистика переходов</h3>
+                    <div id="stats-list" class="stats-list">
+                        <!-- Статистика генерируется в JS -->
+                    </div>
+                </div>
+
+                <div class="admin-add-product">
+                    <h3>Добавить новый товар</h3>
+                    <form id="add-product-form" onsubmit="app.addProduct(event)">
+                        <div class="form-row">
+                            <select id="new-category" required>
+                                <option value="" disabled selected>Категория...</option>
+                                <option value="skin">Кожа лица</option>
+                                <option value="hair">Волосы</option>
+                                <option value="body">Тело</option>
+                            </select>
+                            <select id="new-problem" required>
+                                <option value="" disabled selected>Проблема...</option>
+                                <optgroup label="Кожа лица">
+                                    <option value="dryness">Сухость / Шелушение</option>
+                                    <option value="acne">Прыщи / Воспаления</option>
+                                    <option value="wrinkles">Морщины / Антиэйдж</option>
+                                    <option value="pigmentation">Пигментация / Постакне</option>
+                                </optgroup>
+                                <optgroup label="Волосы">
+                                    <option value="split-ends">Секущиеся кончики / Ломкость</option>
+                                    <option value="hair-dryness">Сухость волос</option>
+                                    <option value="hair-loss">Выпадение волос</option>
+                                    <option value="dandruff">Перхоть</option>
+                                </optgroup>
+                                <optgroup label="Тело">
+                                    <option value="cellulite">Целлюлит / Растяжки</option>
+                                    <option value="body-dryness">Сухая кожа тела</option>
+                                    <option value="irritation">Раздражение / Вросшие волосы</option>
+                                </optgroup>
+                            </select>
+                            <select id="new-budget" required>
+                                <option value="" disabled selected>Бюджет...</option>
+                                <option value="low">До 1000 ₽</option>
+                                <option value="mid">1000 - 3000 ₽</option>
+                                <option value="high">От 3000 ₽</option>
+                            </select>
+                        </div>
+                        <input type="text" id="new-name" placeholder="Название средства" required>
+                        <input type="text" id="new-brand" placeholder="Бренд" required>
+                        <input type="url" id="new-img" placeholder="Ссылка на картинку (или оставьте пустым для заглушки)">
+                        <textarea id="new-desc" placeholder="Описание: как именно решает проблему..." required rows="3"></textarea>
+                        <textarea id="new-ingredients" placeholder="Состав (используйте <span class='highlight'>текст</span> для выделения активов)" required rows="3"></textarea>
+                        <input type="url" id="new-link" placeholder="Обычная ссылка на товар (мы сами сделаем её реферальной)" required>
+                        
+                        <button type="submit" class="btn btn-primary">Добавить в базу</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Glow&Care. Все права защищены<span class="secret-admin-trigger" style="cursor: pointer;" title="Секретный вход" onclick="app.showSection('admin-login')">.</span></p>
+    </footer>
+
+    <!-- Подключаем наш JavaScript файл -->
+    <script src="app.js"></script>
+</body>
+</html>
